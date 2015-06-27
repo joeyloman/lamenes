@@ -33,4 +33,4 @@
  * str_chrchk.h - string character check function
  */
 
-extern int str_chrchk(char *string, char *charset);
+int str_chrchk(char *string, char *charset);

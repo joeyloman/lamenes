@@ -33,4 +33,4 @@
  * str_cut.h - string cut function
  */
 
-extern char *str_cut(char *str, const char *delim);
+char *str_cut(char *str, const char *delim);

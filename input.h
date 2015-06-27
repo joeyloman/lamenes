@@ -29,9 +29,9 @@
  * SUCH DAMAGE.
  */
 
-extern void set_input(char *pad_key);
-extern void clear_input(char *pad_key);
-extern void reset_input();
+void set_input(char *pad_key);
+void clear_input(char *pad_key);
+void reset_input();
 
 extern int pad1_DOWN;
 extern int pad1_UP;

@@ -33,8 +33,8 @@
 
 extern SDL_Surface *screen;
 
-extern void screen_lock();
-extern void screen_unlock();
+void screen_lock();
+void screen_unlock();
 
-extern void init_SDL(int type, int fullscreen);
-extern void check_SDL_event();
+void init_SDL(int type, int fullscreen);
+void check_SDL_event();
