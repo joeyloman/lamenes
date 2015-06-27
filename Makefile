@@ -7,11 +7,11 @@ lamenes:	$(LAMENES)
 		strip a.out
 		mv a.out lamenes
 
-install:	$(LAMENES)
+install:	lamenes
 		cp lamenes /usr/local/bin
 
-uninstall:	$(LAMENES)
-		rm /usr/local/bin/lamenes
+uninstall:
+		rm -f /usr/local/bin/lamenes
 
 clean:		$(LAMENES)
 		rm -f lamenes lamenes.core core.*

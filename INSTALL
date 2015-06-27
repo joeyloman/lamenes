@@ -2,7 +2,7 @@
 *** LameNES INSTALL ***
 ***********************
 
-LameNES is programmed to build with gnu gcc. You must have gcc installed 
+LameNES is programmed to build with gnu gcc. You must have gcc installed
 and libsdl-devel in order to compile LameNES.
 
 To build LameNES from source you can use one of the make-files included
@@ -11,7 +11,7 @@ in this source.
 Tested platforms:
 
 --------------
-Linux/OpenBSD:
+Linux/OpenBSD/MacOSX:
 --------------
 
 To build LameNES type "make"
@@ -24,10 +24,3 @@ Windows:
 
 On MS Windows you can use MinGW to compile LameNES: open the msys console and
 type "make -f makefile.mingw32".
-
--------
-MacOSX:
--------
-
-To build LameNES on MacOSX you can use XCode. Append all the files to a
-new project and build it.
