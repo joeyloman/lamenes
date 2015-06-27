@@ -379,7 +379,8 @@
 						break; }
 
 #define COMP_MEM_IDI(REG,CYCLES)	{ addr = memory[program_counter] + x_reg; \
-						tmp = (memory[addr + 1] << 8) | memory[addr]; \
+						tmp2 = (memory[addr + 1] << 8) | memory[addr]; \
+						tmp = memory_read(tmp2); \
 						carry_flag = (REG >= tmp) ? 1 : 0; \
 						sign_flag = ((signed char)REG < (signed char)tmp) ? 1 : 0; \
 						zero_flag = (REG == tmp) ? 1 : 0; \
@@ -388,7 +389,8 @@
 						break; }
 
 #define COMP_MEM_INI(REG,CYCLES)	{ addr = memory[program_counter]; \
-						tmp = ((memory[addr + 1] << 8) | memory[addr]) + y_reg; \
+						tmp2 = ((memory[addr + 1] << 8) | memory[addr]) + y_reg; \
+						tmp = memory_read(tmp2); \
 						carry_flag = (REG >= tmp) ? 1 : 0; \
 						sign_flag = ((signed char)REG < (signed char)tmp) ? 1 : 0; \
 						zero_flag = (REG == tmp) ? 1 : 0; \
@@ -559,7 +561,7 @@
 					break; }
 
 /* jump to subroutine */
-//if(((program_counter + 2) & 0xFF) == 0) { PUSH_ST(((program_counter + 1) >> 8) + 1); } else { PUSH_ST((program_counter + 1) >> 8); } 
+//if(((program_counter + 2) & 0xFF) == 0) { PUSH_ST(((program_counter + 1) >> 8) + 1); } else { PUSH_ST((program_counter + 1) >> 8); }
 #define JSR(CYCLES)		{ PUSH_ST((program_counter + 1) >> 8); \
 					PUSH_ST(program_counter + 1); \
 					program_counter = (memory[program_counter+1] << 8) | memory[program_counter]; \
@@ -855,7 +857,7 @@
 						zero_flag = !(accumulator); \
 						cycle_count -= CYCLES; \
 						break; }\
-							
+
 #define ROTATE_RIGHT_ZP(CYCLES)		{ tmp = carry_flag; \
 						tmp2 = memory[program_counter]; \
 						addr = memory_read(tmp2); \
