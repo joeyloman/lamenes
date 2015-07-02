@@ -38,7 +38,8 @@
 #include "lame6502/lame6502.h"
 #include "lame6502/disas.h"
 
-#include "sdl_functions.h"
+#include "system/display.h"
+
 #include "lamenes.h"
 #include "ppu.h"
 #include "macros.h"
@@ -313,79 +314,6 @@ write_ppu_memory(unsigned int address,unsigned char data)
 }
 
 void
-draw_pixel(int x, int y, int nescolor)
-{
-	/* don't fail on attempts to draw outside the screen. */
-	if ((x>=sdl_screen_width) || (x<0)) {
-		#ifdef PPU_DEBUG
-		printf("[%d]: warning attempt to draw outside the screen! [x = %d]\n",debug_cnt,x);
-		#endif
-
-		return;
-	}
-
-	if ((y>=sdl_screen_height) || (y<0)) {
-		#ifdef PPU_DEBUG
-		printf("[%d]: warning attempt to draw outside the screen! [y = %d]\n",debug_cnt,y);
-		#endif
-
-		return;
-	}
-
-	Uint8 R = palette[nescolor].r;
-	Uint8 G = palette[nescolor].g;
-	Uint8 B = palette[nescolor].b;
-
-	/* pixel tranparency */
-	if(nescolor == 0)
-		return;
-
-	Uint32 color = SDL_MapRGB(screen->format, R, G, B);
-
-	switch(screen->format->BytesPerPixel) {
-		/* Assuming 8-bpp */
-		case 1: {
-			Uint8 *bufp;
-			bufp = (Uint8 *)screen->pixels + y*screen->pitch + x;
-			*bufp = color;
-		}
-		break;
-
-		/* Probably 15-bpp or 16-bpp */
-		case 2: {
-			Uint16 *bufp;
-			bufp = (Uint16 *)screen->pixels + y*screen->pitch/2 + x;
-			*bufp = color;
-		}
-		break;
-
-		/* Slow 24-bpp mode, usually not used */
-		case 3: {
-			Uint8 *bufp;
-			bufp = (Uint8 *)screen->pixels + y*screen->pitch + x * 3;
-			if(SDL_BYTEORDER == SDL_LIL_ENDIAN) {
-				bufp[0] = color;
-				bufp[1] = color >> 8;
-				bufp[2] = color >> 16;
-			} else {
-				bufp[2] = color;
-				bufp[1] = color >> 8;
-				bufp[0] = color >> 16;
-			}
-		}
-		break;
-                                                                                
-		/* Probably 32-bpp */
-		case 4: {
-			Uint32 *bufp;
-			bufp = (Uint32 *)screen->pixels + y*screen->pitch/4 + x;
-			*bufp = color;
-		}
-		break;
-	}
-}
-
-void
 render_background(int scanline)
 {
 	int tile_count;
@@ -496,20 +424,20 @@ render_background(int scanline)
 							for(s_x = 0; s_x < scale; s_x++) {
 								if(ntsc == 1) {
 									if(scanline > 7) {
-										draw_pixel(((tile_count << 3) + i) * scale + s_x, (scanline - 8) * scale + s_y, ppu_memory[0x3f00 + (tile[loopyX + i])]);
+										display_set_pixel(((tile_count << 3) + i) * scale + s_x, (scanline - 8) * scale + s_y, ppu_memory[0x3f00 + (tile[loopyX + i])]);
 									}
 								} else {
-									draw_pixel(((tile_count << 3) + i) * scale + s_x, scanline * scale + s_y, ppu_memory[0x3f00 + (tile[loopyX + i])]);
+									display_set_pixel(((tile_count << 3) + i) * scale + s_x, scanline * scale + s_y, ppu_memory[0x3f00 + (tile[loopyX + i])]);
 								}
 							}
 						}
 					} else {
 						if(ntsc == 1) {
 							if(scanline > 7) {
-								draw_pixel((tile_count << 3) + i, scanline - 8, ppu_memory[0x3f00 + (tile[loopyX + i])]);
+								display_set_pixel((tile_count << 3) + i, scanline - 8, ppu_memory[0x3f00 + (tile[loopyX + i])]);
 							}
 						} else {
-							draw_pixel((tile_count << 3) + i, scanline, ppu_memory[0x3f00 + (tile[loopyX + i])]);
+							display_set_pixel((tile_count << 3) + i, scanline, ppu_memory[0x3f00 + (tile[loopyX + i])]);
 						}
 					}
 				}
@@ -526,20 +454,20 @@ render_background(int scanline)
 							for(s_x = 0; s_x < scale; s_x++) {
 								if(ntsc == 1) {
 									if(scanline > 7) {
-										draw_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, (scanline - 8) * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
+										display_set_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, (scanline - 8) * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
 									}
 								} else {
-									draw_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, scanline * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
+									display_set_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, scanline * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
 								}
 							}
 						}
 					} else {
 						if(ntsc == 1) {
 							if(scanline > 7) {
-								draw_pixel((tile_count << 3) + i - loopyX, scanline - 8, ppu_memory[0x3f00 + (tile[i])]);
+								display_set_pixel((tile_count << 3) + i - loopyX, scanline - 8, ppu_memory[0x3f00 + (tile[i])]);
 							}
 						} else {
-							draw_pixel((tile_count << 3) + i - loopyX, scanline, ppu_memory[0x3f00 + (tile[i])]);
+							display_set_pixel((tile_count << 3) + i - loopyX, scanline, ppu_memory[0x3f00 + (tile[i])]);
 						}
 					}
 				}
@@ -556,20 +484,20 @@ render_background(int scanline)
 							for(s_x = 0; s_x < scale; s_x++) {
 								if(ntsc == 1) {
 									if(scanline > 7) {
-										draw_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, (scanline - 8) * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
+										display_set_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, (scanline - 8) * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
 									}
 								} else {
-									draw_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, scanline * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
+									display_set_pixel(((tile_count << 3) + i - loopyX) * scale + s_x, scanline * scale + s_y, ppu_memory[0x3f00 + (tile[i])]);
 								}
 							}
 						}
 					} else {
 						if(ntsc == 1) {
 							if(scanline > 7) {
-								draw_pixel((tile_count << 3) + i - loopyX, scanline - 8, ppu_memory[0x3f00 + (tile[i])]);
+								display_set_pixel((tile_count << 3) + i - loopyX, scanline - 8, ppu_memory[0x3f00 + (tile[i])]);
 							}
 						} else {
-							draw_pixel((tile_count << 3) + i - loopyX, scanline, ppu_memory[0x3f00 + (tile[i])]);
+							display_set_pixel((tile_count << 3) + i - loopyX, scanline, ppu_memory[0x3f00 + (tile[i])]);
 						}
 					}
 				}
@@ -809,20 +737,20 @@ render_sprite(int y, int x, int pattern_number, int attribs, int spr_nr)
 									for(s_x = 0; s_x < scale; s_x++) {
 										if(ntsc == 1) {
 											if(y + j > 7) {
-												draw_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+												display_set_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 											}
 										} else {
-											draw_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+											display_set_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 										}
 									}
 								}
 							} else {
 								if(ntsc == 1) {
 									if(y + j > 7) {
-										draw_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+										display_set_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 									}
 								} else {
-									draw_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+									display_set_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 								}
 							}
 						}
@@ -836,20 +764,20 @@ render_sprite(int y, int x, int pattern_number, int attribs, int spr_nr)
 										for(s_x = 0; s_x < scale; s_x++) {
 											if(ntsc == 1) {
 												if(y + j > 7) {
-													draw_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+													display_set_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 												}
 											} else {
-												draw_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+												display_set_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 											}
 										}
 									}
 								} else {
 									if(ntsc == 1) {
 										if(y + j > 7) {
-											draw_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+											display_set_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 										}
 									} else {
-										draw_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+										display_set_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 									}
 								}
 							}
@@ -968,20 +896,20 @@ render_sprite(int y, int x, int pattern_number, int attribs, int spr_nr)
 									for(s_x = 0; s_x < scale; s_x++) {
 										if(ntsc == 1) {
 											if(y + j > 7) {
-												draw_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+												display_set_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 											}
 										} else {
-											draw_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+											display_set_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 										}
 									}
 								}
 							} else {
 								if(ntsc == 1) {
 									if(y + j > 7) {
-										draw_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+										display_set_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 									}
 								} else {
-									draw_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+									display_set_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 								}
 							}
 						}
@@ -995,20 +923,20 @@ render_sprite(int y, int x, int pattern_number, int attribs, int spr_nr)
 										for(s_x = 0; s_x < scale; s_x++) {
 											if(ntsc == 1) {
 												if(y + j > 7) {
-													draw_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+													display_set_pixel((x + i) * scale + s_x, ((y - 8) + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 												}
 											} else {
-												draw_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
+												display_set_pixel((x + i) * scale + s_x, (y + j) * scale + s_y, ppu_memory[0x3f10 + (sprite[i] [j])]);
 											}
 										}
 									}
 								} else {
 									if(ntsc == 1) {
 										if(y + j > 7) {
-											draw_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+											display_set_pixel(x + i, (y - 8) + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 										}
 									} else {
-										draw_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
+										display_set_pixel(x + i, y + j, ppu_memory[0x3f10 + (sprite[i] [j])]);
 									}
 								}
 							}
@@ -1059,16 +987,4 @@ render_sprites()
 	for(i = 63; i >= 0; i--) {
 		render_sprite(sprite_memory[i * 4],sprite_memory[i * 4 + 3],sprite_memory[i * 4 + 1],sprite_memory[i * 4 + 2],i);
 	}
-}
-
-void
-update_screen()
-{
-	int nescolor = ppu_memory[0x3f00];
-
-	/* update the screen */
-	SDL_Flip(screen);
-
-	/* clear the surface and set it to nescolor 0x10 */
-	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, palette[nescolor].r, palette[nescolor].g, palette[nescolor].b));
 }

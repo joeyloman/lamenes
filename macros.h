@@ -29,6 +29,8 @@
  * SUCH DAMAGE.
  */
 
+#pragma once
+
 /*
  * &0x80 = D7
  * &0x40 = D6

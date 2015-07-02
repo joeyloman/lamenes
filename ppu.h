@@ -29,6 +29,8 @@
  * SUCH DAMAGE.
  */
 
+#pragma once
+
 extern unsigned int ppu_control1;
 extern unsigned int ppu_control2;
 extern unsigned int ppu_addr;
@@ -51,4 +53,3 @@ void write_ppu_memory(unsigned int address,unsigned char data);
 void render_background(int scanline);
 void render_sprites();
 void check_sprite_hit(int scanline);
-void update_screen();

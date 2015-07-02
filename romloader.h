@@ -29,6 +29,8 @@
  * SUCH DAMAGE.
  */
 
+#pragma once
+
 extern unsigned char PRG;
 extern unsigned char CHR;
 

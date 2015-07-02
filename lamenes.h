@@ -29,6 +29,8 @@
  * SUCH DAMAGE.
  */
 
+#pragma once
+
 extern char romfn[256];
 
 extern unsigned char *romcache;
@@ -64,7 +66,6 @@ extern long romlen;
 unsigned char memory_read(unsigned int address);
 void write_memory(unsigned int address,unsigned char data);
 
-void set_input();
 void reset_emulation();
 void quit_emulation();
 
