@@ -102,7 +102,7 @@ int scale = 1;
 int frameskip = 0;
 int skipframe = 0;
 
-int sdl_delay = 0;
+int sdl_delay = 10;
 
 char *savfile;
 char *statefile;
@@ -659,9 +659,7 @@ quit_emulation()
 	exit(0);
 }
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char *argv[]) {
 	int chr_check_result;
 
 	int i;

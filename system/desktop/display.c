@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "lamenes.h"
 #include "palette.h"
 
 #include "system/display.h"
 
-SDL_Surface *screen;
+static SDL_Window *window;
+static SDL_Surface *screen;
 
 void display_init(uint16_t width, uint16_t height, DisplayType display_type, bool fullscreen) {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -18,26 +19,24 @@ void display_init(uint16_t width, uint16_t height, DisplayType display_type, boo
 
   atexit(SDL_Quit);
 
-  /* PAL */
-  if (display_type == DisplayTypePAL) {
-    if (fullscreen) {
-      screen = SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE | SDL_FULLSCREEN | SDL_DOUBLEBUF);
-    } else {
-      screen = SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE | SDL_DOUBLEBUF);
-    }
+  uint32_t flags = (fullscreen) ? (SDL_WINDOW_FULLSCREEN) : 0;
+
+  window = SDL_CreateWindow("lamenes",
+                            SDL_WINDOWPOS_UNDEFINED,
+                            SDL_WINDOWPOS_UNDEFINED,
+                            width,
+                            height,
+                            flags);
+
+  if (window == NULL) {
+    printf("error: unable to create window %s\n", SDL_GetError());
+    exit(1);
   }
 
-  /* NTSC */
-  if (display_type == DisplayTypeNTSC) {
-    if (fullscreen) {
-      screen = SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE | SDL_FULLSCREEN | SDL_DOUBLEBUF);
-    } else {
-      screen = SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE | SDL_DOUBLEBUF);
-    }
-  }
+  screen = SDL_GetWindowSurface(window);
 
   if (screen == NULL) {
-    printf("error: unable to set video %s\n", SDL_GetError());
+    printf("error: unable to create screen %s\n", SDL_GetError());
     exit(1);
   }
 }
@@ -125,7 +124,7 @@ void display_update(void) {
   uint8_t nes_color = ppu_memory[0x3f00];
 
   /* update the screen */
-  SDL_Flip(screen);
+  SDL_UpdateWindowSurface(window);
 
   /* clear the surface and set it to nes_color 0x10 */
   SDL_FillRect(screen,
