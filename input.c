@@ -29,21 +29,22 @@
  * SUCH DAMAGE.
  */
 
+#include <stdint.h>
 #include <stdio.h>
 
 #include "lamenes.h"
 
-int pad1_DOWN;
-int pad1_UP;
-int pad1_LEFT;
-int pad1_RIGHT;
-int pad1_START;
-int pad1_SELECT;
-int pad1_A;
-int pad1_B;
+uint8_t pad1_DOWN;
+uint8_t pad1_UP;
+uint8_t pad1_LEFT;
+uint8_t pad1_RIGHT;
+uint8_t pad1_START;
+uint8_t pad1_SELECT;
+uint8_t pad1_A;
+uint8_t pad1_B;
 
 void
-set_input(int pad_key)
+set_input(uint8_t pad_key)
 {
 	switch(pad_key) {
 		/* pad_down */
@@ -93,7 +94,7 @@ set_input(int pad_key)
 }
 
 void
-clear_input(int pad_key)
+clear_input(uint8_t pad_key)
 {
 	switch(pad_key) {
 		/* pad_down */

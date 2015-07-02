@@ -62,10 +62,10 @@ extern int breakpoint;
 extern int stop_at_debug_cnt;
 extern int stackdebug;
 
-//extern unsigned char memory_read(unsigned int address);
-//extern void write_memory(unsigned int address,unsigned char data);
+//unsigned char memory_read(unsigned int address);
+//void write_memory(unsigned int address,unsigned char data);
 
-extern int IRQ(int cycles);
-extern int NMI(int cycles);
-extern void CPU_reset(void);
-extern int CPU_execute(int cycles);
+int IRQ(int cycles);
+int NMI(int cycles);
+void CPU_reset(void);
+int CPU_execute(int cycles);

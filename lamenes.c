@@ -40,7 +40,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <SDL/SDL.h>
 
 #include "lame6502/lame6502.h"
 #include "lame6502/debugger.h"
@@ -52,7 +51,10 @@
 #include "romloader.h"
 #include "ppu.h"
 #include "input.h"
-#include "sdl_functions.h"
+
+#include "system/buttons.h"
+#include "system/display.h"
+#include "system/sleep.h"
 
 #include "lib/str_chrchk.h"
 #include "lib/str_replace.h"
@@ -100,7 +102,7 @@ int scale = 1;
 int frameskip = 0;
 int skipframe = 0;
 
-int sdl_delay = 0;
+int sdl_delay = 10;
 
 char *savfile;
 char *statefile;
@@ -575,7 +577,7 @@ start_emulation()
 		if(skipframe > frameskip)
 			skipframe = 0;
 
-		screen_lock();
+		display_lock();
 		for(scanline = 0; scanline < 240; scanline++) {
 			if(!sprite_zero) {
 				check_sprite_hit(scanline);
@@ -597,7 +599,7 @@ start_emulation()
 		}
 
 		render_sprites();
-		screen_unlock();
+		display_unlock();
 
 		#ifdef DEBUG
 		if(debug_cnt > show_debug_cnt) {
@@ -606,9 +608,9 @@ start_emulation()
 		#endif
 
 		if(skipframe == 0)
-			update_screen();
+			display_update();
 
-		SDL_Delay(sdl_delay);
+		sleep_ms(sdl_delay);
 
 		skipframe++;
 
@@ -616,7 +618,7 @@ start_emulation()
 		//	counter += IRQ(counter);
 		//}
 
-		check_SDL_event();
+		poll_buttons();
 	}
 }
 
@@ -657,9 +659,7 @@ quit_emulation()
 	exit(0);
 }
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char *argv[]) {
 	int chr_check_result;
 
 	int i;
@@ -820,11 +820,12 @@ main(int argc, char **argv)
 
 	printf("[*] setting screen resolution to: %dx%d\n",sdl_screen_width,sdl_screen_height);
 
-	if(pal == 1)
-		init_SDL(0,fullscreen);
+	DisplayType display_type = DisplayTypePAL;
+	if (ntsc == 1) {
+		display_type = DisplayTypeNTSC;
+	}
 
-	if(ntsc == 1)
-		init_SDL(1,fullscreen);
+	display_init(sdl_screen_width, sdl_screen_height, display_type, fullscreen == 1);
 
 	printf("[*] resetting cpu...\n");
 
@@ -864,7 +865,7 @@ main(int argc, char **argv)
 		if(!pause_emulation)
 			start_emulation();
 
-		check_SDL_event();
+		poll_buttons();
 	}
 
 	/* never reached */

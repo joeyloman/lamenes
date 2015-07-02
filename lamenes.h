@@ -29,6 +29,8 @@
  * SUCH DAMAGE.
  */
 
+#pragma once
+
 extern char romfn[256];
 
 extern unsigned char *romcache;
@@ -53,18 +55,17 @@ extern int width;
 extern int sdl_screen_height;
 extern int sdl_screen_width;
 
-extern void load_state();
-extern void save_state();
+void load_state();
+void save_state();
 
 extern int enable_background;
 extern int enable_sprites;
 
 extern long romlen;
 
-extern unsigned char memory_read(unsigned int address);
-extern void write_memory(unsigned int address,unsigned char data);
+unsigned char memory_read(unsigned int address);
+void write_memory(unsigned int address,unsigned char data);
 
-extern void set_input();
-extern void reset_emulation();
-extern void quit_emulation();
+void reset_emulation();
+void quit_emulation();
 

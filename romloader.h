@@ -29,6 +29,8 @@
  * SUCH DAMAGE.
  */
 
+#pragma once
+
 extern unsigned char PRG;
 extern unsigned char CHR;
 
@@ -41,5 +43,5 @@ extern int SRAM;
 extern int MIRRORING;
 extern int VRAM;
 
-extern int analyze_header(char *romfn);
-extern int load_rom(char *romfn);
+int analyze_header(char *romfn);
+int load_rom(char *romfn);
