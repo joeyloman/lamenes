@@ -93,9 +93,9 @@ void poll_buttons(void) {
 
         case SDLK_ESCAPE:
         #ifdef PAD_DEBUG
-        printf("debug [%d]: Q (quit lamenes) key (down) press detected\n",debug_cnt);
+        printf("debug [%d]: ESC (quit lamenes) key (down) press detected\n",debug_cnt);
         #endif
-        CPU_is_running = 0;
+        quit_emulation();
         break;
 
         case SDLK_F1:
