@@ -545,49 +545,49 @@ debugger()
 					/* down */
 					case 1:
 					printf("sending joypad1 [down] to io.\n");
-					set_input((char *) 1);
+					set_input(1);
 					break;
 
 					/* up */
 					case 2:
 					printf("sending joypad1 [up] to io.\n");
-					set_input((char *) 2);
+					set_input(2);
 					break;
 
 					/* left */
 					case 3:
 					printf("sending joypd1 [left] to io.\n");
-					set_input((char *) 3);
+					set_input(3);
 					break;
 
 					/* right */
 					case 4:
 					printf("sending joypad1 [right] to io.\n");
-					set_input((char *) 4);
+					set_input(4);
 					break;
 
 					/* start */
 					case 5:
 					printf("sending joypad1 [start] to io.\n");
-					set_input((char *) 5);
+					set_input(5);
 					break;
 
 					/* select */
 					case 6:
 					printf("sending joypad1 [select] to io.\n");
-					set_input((char *) 6);
+					set_input(6);
 					break;
 
 					/* A */
 					case 7:
 					printf("sending joypad1 [A] to io.\n");
-					set_input((char *) 7);
+					set_input(7);
 					break;
 
 					/* B */
 					case 8:
 					printf("sending joypad1 [B] to io.\n");
-					set_input((char *) 8);
+					set_input(8);
 					break;
 
 					default:

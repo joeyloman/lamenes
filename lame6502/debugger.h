@@ -33,4 +33,4 @@
  * debugger.h - LameNES internal debugger
  */
 
-extern void debugger();
+void debugger();
