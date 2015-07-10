@@ -104,6 +104,9 @@ int skipframe = 0;
 
 int sdl_delay = 10;
 
+/* set the dynamic speed default to true */
+int dynamic_speed = 1;
+
 char *savfile;
 char *statefile;
 
@@ -614,6 +617,8 @@ start_emulation()
 
 		skipframe++;
 
+                update_fps_data();
+
 		//if(!interrupt_flag) {
 		//	counter += IRQ(counter);
 		//}
@@ -701,6 +706,9 @@ int main(int argc, char *argv[]) {
 			if((chr_check_result > 0) && (strlen(argv[i+1]) == chr_check_result)) {
 				frameskip = atoi(argv[i+1]);
 
+                                /* disable dynamic speed */
+                                dynamic_speed = 0;
+
 				i++;
 			} else {
 				printf("[!] error: frameskip option must be a nummeric value!\n\n");
@@ -726,6 +734,9 @@ int main(int argc, char *argv[]) {
 
 			if((chr_check_result > 0) && (strlen(argv[i+1]) == chr_check_result)) {
 				sdl_delay = atoi(argv[i+1]);
+
+                                /* disable dynamic speed */
+                                dynamic_speed = 0;
 
 				i++;
 			} else {

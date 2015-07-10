@@ -55,6 +55,10 @@ extern int width;
 extern int sdl_screen_height;
 extern int sdl_screen_width;
 
+extern int frameskip;
+extern int sdl_delay;
+extern int dynamic_speed;
+
 void load_state();
 void save_state();
 

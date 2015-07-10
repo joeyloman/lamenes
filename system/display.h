@@ -13,3 +13,4 @@ void display_lock(void);
 void display_set_pixel(uint16_t x, uint16_t y, uint8_t nes_color);
 void display_update(void);
 void display_unlock(void);
+void update_fps_data(void);

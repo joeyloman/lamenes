@@ -1,3 +1,8 @@
+//#define SHOW_FPS
+
+/* fps check interval */
+#define FPS_INTERVAL 1.0
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -10,6 +15,24 @@
 
 static SDL_Window *window;
 static SDL_Surface *screen;
+
+/* the last recorded time */
+Uint32 fps_lasttime;
+
+/* fps trackers */
+Uint32 fps_current;
+Uint32 fps_previous;
+
+/* frames passed since the last recorded fps */
+Uint32 fps_frames = 0;
+
+/* standard fps target is pal speed */
+int fps_target = 50;
+
+/* this is for the speed adjustment calculations */
+int fps_target_deviation = 3;
+int fps_target_min;
+int fps_target_max;
 
 void display_init(uint16_t width, uint16_t height, DisplayType display_type, bool fullscreen) {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -39,6 +62,17 @@ void display_init(uint16_t width, uint16_t height, DisplayType display_type, boo
     printf("error: unable to create screen %s\n", SDL_GetError());
     exit(1);
   }
+
+  /* init fps start values */
+  fps_lasttime = SDL_GetTicks();
+
+  /* reset the fps target if needed */
+  if (ntsc == 1)
+    fps_target = 60;
+
+  /* and give it some slack */
+  fps_target_min = fps_target - fps_target_deviation;
+  fps_target_max = fps_target + fps_target_deviation;
 }
 
 void display_lock(void) {
@@ -135,8 +169,46 @@ void display_update(void) {
                           palette[nes_color].b));
 }
 
-void display_unlock() {
+void display_unlock(void) {
   if (SDL_MUSTLOCK(screen)) {
     SDL_UnlockSurface(screen);
+  }
+}
+
+void update_fps_data(void) {
+  fps_frames++;
+
+  if (fps_lasttime < SDL_GetTicks() - FPS_INTERVAL*1000) {
+    fps_lasttime = SDL_GetTicks();
+    fps_current = fps_frames;
+    fps_frames = 0;
+  }
+
+#ifdef SHOW_FPS
+  printf("fps = %d / frameskip = %d / delay = %d\n", fps_current, frameskip, sdl_delay);
+#endif
+
+  /* only adjust speed when dynamic_speed is set. */
+  if (dynamic_speed == 1) {
+    /* check if the emulator speed needs to be adjusted. */
+    if (fps_current > 0) {
+      /* if the framerate is the same as before we can skip the adjustments. */
+      if (fps_current != fps_previous) {
+        if (fps_current > fps_target_max) {
+          /* the framerate is very fast on todays cpus, so we need to adjust the speeds quickly. */
+          sdl_delay += fps_current / 30;
+        } else if (fps_current < fps_target_min) {
+          if (sdl_delay > 0) {
+            /* if the system is slower then todays cpus, we adjust it a little slower. */
+            sdl_delay -= fps_current / 10;
+          } else {
+            printf("TODO: need to set frameskips!\n");
+          }
+        }
+
+        /* save the fps_current for above check, this prevents that the sdl_delay is adjusted every time this function is executed. */
+        fps_previous = fps_current;
+      } 
+    }
   }
 }
