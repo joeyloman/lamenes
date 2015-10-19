@@ -6,7 +6,7 @@ CFLAGS = -O3 -fomit-frame-pointer -Wall -I/usr/local/include -I. `sdl2-config --
 LDFLAGS = -L/usr/local/lib -L/usr/X11R6/lib `sdl2-config --libs`
 
 lamenes: $(LAMENES_SOURCES) $(LIB_SOURCES) $(DESKTOP_SOURCES)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LAMENES_SOURCES) $(LIB_SOURCES) $(DESKTOP_SOURCES) -o lamenes
+	$(CC) -o lamenes $(CFLAGS) $(LAMENES_SOURCES) $(LIB_SOURCES) $(DESKTOP_SOURCES) $(LDFLAGS)
 
 install: lamenes
 	cp lamenes /usr/local/bin
